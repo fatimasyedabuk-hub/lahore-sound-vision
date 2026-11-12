@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lahore, in 88 seconds</title>
+<meta name="description" content="An 88 second sound portrait of Lahore, Pakistan. The photographs move with the sound.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Same pointed-arch shape is used to crop the photo and to place the sound bars (see js/app.js) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <clipPath id="arch" clipPathUnits="objectBoundingBox">
+    <path d="M0,1 L0,0.45 C0,0.2 0.35,0.1 0.5,0 C0.65,0.1 1,0.2 1,0.45 L1,1 Z"/>
+  </clipPath>
+</svg>
+
+<div class="bg on" id="bgA"></div>
+<div class="bg" id="bgB"></div>
+<div class="veil"></div>
+
+<main class="stage">
+
+  <section class="intro">
+    <h1><span class="urdu" lang="ur" dir="rtl">لاہور</span><span class="en">Lahore, in 88 seconds</span></h1>
+    <p class="lede">Press play. The photographs move with the sound of the city: crows at dusk, the call to prayer, the bazaar, the food street, the traffic. Then open the mixer and build your own Lahore.</p>
+
+    <div class="tabs" role="tablist" aria-label="Mode">
+      <button role="tab" id="tabListen" aria-selected="true" aria-controls="listenPanel">Listen</button>
+      <button role="tab" id="tabMix" aria-selected="false" aria-controls="mixPanel" tabindex="-1">Mix it yourself</button>
+    </div>
+
+    <!-- LISTEN -->
+    <div class="panel" id="listenPanel" role="tabpanel" aria-labelledby="tabListen">
+      <div class="controls">
+        <button class="play" id="playBtn" aria-label="Play">
+          <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+        </button>
+        <div class="seekbox">
+          <input type="range" id="seek" min="0" max="88" step="0.1" value="0" aria-label="Position in the soundscape">
+          <div class="times"><span id="tNow">0:00</span><span id="tAll">1:28</span></div>
+        </div>
+        <div class="vol">
+          <button id="muteBtn" aria-label="Mute" aria-pressed="false">
+            <svg class="i-vol" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9zM16 8a5 5 0 010 8M18.5 5.5a9 9 0 010 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg class="i-mute" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 4V5L7 9zM16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <input type="range" id="vol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume">
+        </div>
+      </div>
+
+      <ol class="scenes" id="scenes" aria-label="Scenes"></ol>
+      <p class="hint">Space plays and pauses. Arrow keys skip 5 seconds. Click the picture for a ripple.</p>
+    </div>
+
+    <!-- MIX -->
+    <div class="panel" id="mixPanel" role="tabpanel" aria-labelledby="tabMix" hidden>
+      <p class="mixhelp">Switch sounds on and set how loud each one is. The picture follows the loudest sound.</p>
+      <ul class="stems" id="stems"></ul>
+      <div class="mixbtns">
+        <button id="allOn">All on</button>
+        <button id="allOff">All off</button>
+      </div>
+    </div>
+
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="window" aria-label="Photograph that reacts to the sound">
+    <div class="archwrap" id="archwrap">
+      <canvas id="viz" aria-hidden="true"></canvas>
+      <div class="arch" id="arch">
+        <img class="layer on" id="imgA" alt="" draggable="false">
+        <img class="layer" id="imgB" alt="" draggable="false">
+        <button class="arch-play" id="archPlay" aria-label="Play the soundscape">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </div>
+    </div>
+    <p class="caption" id="caption"><strong id="capTitle">Rooftops at dusk</strong><span id="capLine">Crows and kites circle as the light goes.</span></p>
+  </section>
+
+</main>
+
+<!-- Audio. The composed soundscape, and five loops for the mixer. -->
+<audio id="aMaster" src="assets/audio/lahore-soundscape.mp3" preload="auto"></audio>
+<audio id="aAzaan" src="assets/audio/azaan.mp3" loop preload="none"></audio>
+<audio id="aBazaar" src="assets/audio/bazaar.mp3" loop preload="none"></audio>
+<audio id="aFood" src="assets/audio/food.mp3" loop preload="none"></audio>
+<audio id="aTraffic" src="assets/audio/traffic.mp3" loop preload="none"></audio>
+<audio id="aBirds" src="assets/audio/birds.mp3" loop preload="none"></audio>
+
+<section class="credits" id="credits">
+  <h2>Credits</h2>
+  <p class="small">Sounds from Freesound (CC0): <a href="https://freesound.org/s/715384/" rel="noopener">azan</a> by balaram_mahalder, <a href="https://freesound.org/s/705291/" rel="noopener">Istanbul Grand Bazaar</a> by rtb45, <a href="https://freesound.org/s/811196/" rel="noopener">food cooking soothing sound</a> by glitterbox1, <a href="https://freesound.org/s/815104/" rel="noopener">rickshaw traffic noise in Varanasi</a> by alig, <a href="https://freesound.org/s/458603/" rel="noopener">Crows, kites and airplanes</a> by pianofarm. Edited and mixed by me.</p>
+  <p class="small">Photos: <a href="https://commons.wikimedia.org/wiki/File:Sunset_at_Badshahi_Mosque_%28King%27s_Mosque%29_1.JPG" rel="noopener">Badshahi Mosque (Wikimedia Commons)</a>, <a href="https://www.dawn.com/news/1184755" rel="noopener">Delhi Gate (Dawn)</a>, <a href="https://www.tripadvisor.ca/" rel="noopener">Food Street (TripAdvisor)</a>, <a href="https://www.flickr.com/photos/159849402@N05/45556357295" rel="noopener">traffic (Asad Zaidi / UNFPA, Flickr)</a>, <a href="https://www.npr.org/2026/02/14/g-s1-109711/pakistan-basant-kites-spring-festival-lahore" rel="noopener">kites (NPR)</a>.</p>
+</section>
+
+<script src="js/envelopes.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
